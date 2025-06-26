@@ -7,3 +7,4 @@ final class HomeInitial extends HomeState {}
 final class ValueAdded extends HomeState {}
 final class ValueRead extends HomeState {}
 final class ValueDeleted extends HomeState {}
+final class AllValueDeleted extends HomeState {}

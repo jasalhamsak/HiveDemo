@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hivepractice/presentation/HomeScreen.dart';
+import 'package:hivepractice/presentation/cubit/home_cubit.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +13,10 @@ void main() async{
  //open the box
  var box = await Hive.openBox('myBox');
 
-  runApp(const MyApp());
+  runApp( BlocProvider(
+    create: (_) => HomeCubit()..init(),
+    child: const MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
