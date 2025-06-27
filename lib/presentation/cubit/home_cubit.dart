@@ -44,11 +44,17 @@ class HomeCubit extends Cubit<HomeState> {
 
 
 //CURD operations Starts
-  void writeData(String value) {
-    if(value.isEmpty){
+  void writeData(String textItem ,{bool isStrikeOff = false}) {
+    if(textItem.isEmpty){
       return;
     }
-    _myBox.put(counter, value);
+
+    Map<String,dynamic> values ={
+      "text" : textItem,
+      "isStrikeOff" : isStrikeOff
+    };
+
+    _myBox.put(counter, values);
     print(counter);
     counter++;
     print(counter);
@@ -78,11 +84,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 //CURD operations Ends
 
-void changeIsStrike(){
-    isStrike =!isStrike;
-    emit(IsStrikes());
-}
-
+//toggle Strike Line
+  void toggleStrike(int key) {
+    final currentItem = _myBox.get(key);
+    currentItem['isStrikeOff'] = !(currentItem['isStrikeOff'] ?? false);
+    _myBox.put(key, currentItem);
+    readData(); // refresh UI
+    emit(ValueUpdated());
+  }
 
 
 

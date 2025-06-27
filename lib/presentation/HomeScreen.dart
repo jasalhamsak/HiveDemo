@@ -18,7 +18,7 @@ class Homescreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text("CURD Operations"),
+              Text("To Do List",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
               SizedBox(height: 30,),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -56,23 +56,27 @@ class Homescreen extends StatelessWidget {
                   final cubit = context.read<HomeCubit>();
                   if(state is AllValueDeleted||cubit.values.isEmpty){return SizedBox();}
                   else {
-                    return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // MaterialButton(
-                            //   onPressed: context.read<HomeCubit>().readData,
-                            //   color: Colors.blue[200],
-                            //   child: const Text("Read"),
-                            // ),
-                            MaterialButton(
-                              onPressed: () {
-                                context.read<HomeCubit>().deleteData("all");
-                              },
-                              color: Colors.red[200],
-                              child: const Text("Delete all"),
-                            ),
-                          ],
-                        );
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // MaterialButton(
+                              //   onPressed: context.read<HomeCubit>().readData,
+                              //   color: Colors.blue[200],
+                              //   child: const Text("Read"),
+                              // ),
+                              MaterialButton(
+                                onPressed: () {
+                                  context.read<HomeCubit>().deleteData("all");
+                                },
+                                color: Colors.red,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                                child: const Text("Delete all",style: TextStyle(color: Colors.white ),),
+                              ),
+                            ],
+                          ),
+                    );
                   }
                 },
               ),
@@ -96,54 +100,55 @@ class Homescreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final key = keys[index];
                         final value = values[index];
-                        return Container(
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: (){
-                                      cubit.changeIsStrike();
-                                    },
+                        bool isStrikeOff = value["isStrikeOff"] ;
+                        return InkWell(
+                          onTap: (){
+                            cubit.toggleStrike(key);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
                                     child: Row(
                                       children: [
-                                        Icon(cubit.isStrike?Icons.check_circle:
+                                        Icon(isStrikeOff?Icons.check_circle:
                                           Icons.circle_outlined,
-                                          color: cubit.isStrike?Colors.green:Colors.grey,
+                                          color: isStrikeOff?Colors.green:Colors.grey,
                                         ),
                                         SizedBox(
                                           width: 5,
                                         ),
                                         Expanded(
                                           child: Text(
-                                            values[index].toString().sentenceCase,
-                                            style:  TextStyle(fontWeight: FontWeight.w500,decoration: cubit.isStrike? TextDecoration.lineThrough:TextDecoration.none),
+                                            values[index]["text"].toString().sentenceCase,
+                                            style:  TextStyle(fontWeight: FontWeight.w500,decoration: isStrikeOff? TextDecoration.lineThrough:TextDecoration.none),
                                             softWrap: true,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                MaterialButton(
-                                  shape: CircleBorder(),
-                                  onPressed: () {
-                                    context.read<HomeCubit>().deleteData(key);
-                                  },
-                                  color: Colors.red,
-                                  child: Icon(
-                                    Icons.clear,
-                                    color: Colors.white,
+                                  MaterialButton(
+                                    shape: CircleBorder(),
+                                    onPressed: () {
+                                      context.read<HomeCubit>().deleteData(key);
+                                    },
+                                    color: Colors.red[400],
+                                    child: Icon(
+                                      Icons.clear,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         );

@@ -28,6 +28,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Hive Demo',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(),           // Light theme
+      themeMode: ThemeMode.system,
+      darkTheme: ThemeData.dark(), // Dark theme
       home: Homescreen(),
     );
   }
