@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hivepractice/presentation/cubit/home_cubit.dart';
+import 'package:recase/recase.dart';
 
 class Homescreen extends StatelessWidget {
   Homescreen({super.key});
@@ -22,6 +23,10 @@ class Homescreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextFormField(
+                  onFieldSubmitted: (value) {
+                    context.read<HomeCubit>().writeData(value);
+                    addController.clear();
+                  },
                   controller: addController,
                   decoration: InputDecoration(
                     fillColor: Colors.grey[100],
@@ -48,10 +53,10 @@ class Homescreen extends StatelessWidget {
               ),
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
-                  final result = context.watch<HomeCubit>().result;
-                  return result.isEmpty
-                      ? SizedBox()
-                      : Row(
+                  final cubit = context.read<HomeCubit>();
+                  if(state is AllValueDeleted||cubit.values.isEmpty){return SizedBox();}
+                  else {
+                    return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             // MaterialButton(
@@ -68,6 +73,7 @@ class Homescreen extends StatelessWidget {
                             ),
                           ],
                         );
+                  }
                 },
               ),
               BlocBuilder<HomeCubit, HomeState>(
@@ -75,18 +81,18 @@ class Homescreen extends StatelessWidget {
                   final cubit = context.read<HomeCubit>();
                   List keys = cubit.keys;
                   List values = cubit.values;
-                  final result = context.watch<HomeCubit>().result;
-                  return result.isEmpty
+                  return state is AllValueDeleted ||cubit.values.isEmpty
                       ? SizedBox():Container(
-                    padding: const EdgeInsets.all(20),
-                    width: 300,
-                    height: 400,
+                    padding: const EdgeInsets.all(10),
+                    width: 350,
                     decoration: BoxDecoration(
                       color: Colors.blue[100],
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: ListView.builder(
                       itemCount: keys.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final key = keys[index];
                         final value = values[index];
@@ -101,20 +107,30 @@ class Homescreen extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle_outlined,
-                                      color: Colors.grey,
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: (){
+                                      cubit.changeIsStrike();
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(cubit.isStrike?Icons.check_circle:
+                                          Icons.circle_outlined,
+                                          color: cubit.isStrike?Colors.green:Colors.grey,
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            values[index].toString().sentenceCase,
+                                            style:  TextStyle(fontWeight: FontWeight.w500,decoration: cubit.isStrike? TextDecoration.lineThrough:TextDecoration.none),
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      values[index].toString(),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                                 MaterialButton(
                                   shape: CircleBorder(),
@@ -136,6 +152,7 @@ class Homescreen extends StatelessWidget {
                   );
                 },
               ),
+              SizedBox(height: 50,)
             ],
           ),
         ),
